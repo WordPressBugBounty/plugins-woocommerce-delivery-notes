@@ -25,17 +25,21 @@ The plugin adds a new side panel on the order page to allow shop administrators 
 
 = Features =
 
-* Print invoices and delivery notes via the side panel on the "Order Edit" page
-* Quickly print invoices and delivery notes on the "Orders" page
+* New! 2 different layouts for invoice and delivery notes
+* New! Live preview for templates
+* New! Attach PDF file to emails based on selected order status
+* New! Store PDF files in a folder for a specific duration
+* New! Adjust logo size with custom length and height settings
+* Print invoices, delivery notes and receipts via the side panel on the “Order Edit” page
+* Quickly print invoices, delivery notes and receipts on the “Orders” page
 * Bulk print invoices and delivery notes
-* Allow customers to print the order in the "My Account" page
-* Include a print link in customer E-Mails
-* Add a company address, a logo and many other information to the invoice and delivery note
-* Completely customize the invoice and delivery note template
-* Simple invoice numbering
+* Allow customers to print the order in the “My Account” page
+* Include a print link in customer emails
+* Add a company address, a logo, and many other details to the invoice and delivery note
+* Offers advanced customization support via hooks and filters
+* Simple invoice numbering with prefix and suffix options
 * Supports sequential order numbers
 * Supports the WooCommerce refund system
-* Intelligent invoice and delivery note template system with hooks and functions.php support  
 
 = Support =
 

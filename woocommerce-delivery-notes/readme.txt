@@ -325,7 +325,7 @@ You can use the functions from WordPress, WooCommerce and every installed plugin
 
 = Can I download the order as PDF instead of printing it out? =
 
-No, this isn't possible. Look for another plugin that can do this.
+No, this isn't possible. However, you can store the PDF and attach it to your email.
 
 = I need some more content on the order, how can I add it? =
 
@@ -339,12 +339,14 @@ Please [contribute your translation](https://github.com/TycheSoftwares/woocommer
 
 == Screenshots ==
 
-1. The clean invoice print view. 
-2. Print panel.
-3. Quick print actions.
-4. Bulk print orders.
-5. Enter company and contact information.
-6. Customers can also print the order.
+1. The clean invoice print view.
+2. Live preview for customization
+3. Attach PDF file to emails based on selected order status
+4. Quick print buttons on the order edit page.
+5. Customers can also print the order.
+6. Quick print actions.
+7. Bulk print orders.
+8. Enter company and contact information.
 
 == Changelog ==
 

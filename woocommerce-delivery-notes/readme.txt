@@ -340,13 +340,11 @@ Please [contribute your translation](https://github.com/TycheSoftwares/woocommer
 == Screenshots ==
 
 1. The clean invoice print view.
-2. Live preview for customization
-3. Attach PDF file to emails based on selected order status
+2. Live preview for Invoice, Receipt, and Delivery notes.
+3. Attach PDF file to emails based on selected order status.
 4. Quick print buttons on the order edit page.
 5. Customers can also print the order.
 6. Quick print actions.
-7. Bulk print orders.
-8. Enter company and contact information.
 
 == Changelog ==
 

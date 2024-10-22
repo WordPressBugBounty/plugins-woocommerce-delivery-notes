@@ -36,7 +36,7 @@ if ( ! class_exists( 'WooCommerce_Delivery_Notes' ) ) {
 		 *
 		 * @var string $plugin_version Current plugin version number
 		 */
-		public static $plugin_version = '5.1.0';
+		public static $plugin_version = '5.2.0';
 
 		/**
 		 * Plugin URL on current installation
@@ -363,6 +363,19 @@ if ( ! class_exists( 'WooCommerce_Delivery_Notes' ) ) {
 		 * Install or update the default settings.
 		 */
 		public function update() {
+			// Set default template type for invoice, receipt, and delivery-note if not set.
+			if ( false === get_option( 'wcdn_template_type_invoice', false ) ) {
+				add_option( 'wcdn_template_type_invoice', 'yes' );
+			}
+			if ( false === get_option( 'wcdn_template_type_receipt', false ) ) {
+				add_option( 'wcdn_template_type_receipt', 'yes' );
+			}
+			if ( false === get_option( 'wcdn_template_type_delivery_note', false ) ) {
+				add_option( 'wcdn_template_type_delivery-note', 'yes' );
+			}
+			if ( false === get_option( 'wcdn_print_order_page_endpoint', false ) ) {
+				add_option( 'wcdn_print_order_page_endpoint', 'print-order' );
+			}
 			$option_version = get_option( 'wcdn_version', '1' );
 			if ( isset( $_FILES['shop_logo'] ) && ! empty( $_FILES['shop_logo'] ) ) {
 				$upload = wp_handle_upload(

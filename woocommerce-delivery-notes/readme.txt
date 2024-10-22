@@ -6,7 +6,7 @@ Tags: packing slips, invoice, pdf invoice, delivery notes, woocommerce print inv
 Requires at least: 4.4
 Tested up to: 6.6.2
 Author URI: https://www.tychesoftwares.com/
-Stable tag: 5.1.0
+Stable tag: 5.2.0
 License: GPLv3 or later
 License URI: http://www.opensource.org/licenses/gpl-license.php
 
@@ -25,11 +25,12 @@ The plugin adds a new side panel on the order page to allow shop administrators 
 
 = Features =
 
-* New! 2 different layouts for invoice and delivery notes
-* New! Live preview for templates
-* New! Attach PDF file to emails based on selected order status
-* New! Store PDF files in a folder for a specific duration
-* New! Adjust logo size with custom length and height settings
+* Print invoices and delivery notes via the side panel on the "Order Edit" page
+* **New!** 2 different layouts for invoice and delivery notes
+* **New!** Live preview for templates
+* **New!** Attach PDF file to emails based on selected order status
+* **New!** Store PDF files in a folder for a specific duration
+* **New!** Adjust logo size with custom length and height settings
 * Print invoices, delivery notes and receipts via the side panel on the “Order Edit” page
 * Quickly print invoices, delivery notes and receipts on the “Orders” page
 * Bulk print invoices and delivery notes

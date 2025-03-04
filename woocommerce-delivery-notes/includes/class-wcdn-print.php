@@ -597,7 +597,9 @@ if ( ! class_exists( 'WCDN_Print' ) ) {
 				}
 
 				// Additional check for user ownership if necessary.
-				if ( ! is_user_logged_in() || ( get_current_user_id() !== $order->get_customer_id() ) ) {
+				$is_allowed_for_non_logged_in = apply_filters( 'allow_user_email_order_access', false, $order );
+
+				if ( ! is_user_logged_in() && ( get_current_user_id() !== $order->get_customer_id() ) && ! $is_allowed_for_non_logged_in ) {
 					$this->orders = null;
 					if ( isset( $_SERVER['REQUEST_URI'] ) ) {
 						$redirect_url = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
@@ -605,9 +607,9 @@ if ( ! class_exists( 'WCDN_Print' ) ) {
 						$redirect_url = home_url();
 					}
 					if ( isset( $_GET['need_login_message'] ) && $_GET['need_login_message'] === 'true' ) { // phpcs:ignore
-						echo '<div class="notice notice-info"><p>' . __( 'You need to be logged into your account to access the Invoice. Please login first.' ) . '</p></div>'; // phpcs:ignore
+						echo '<div class="notice notice-info"><p>' . __( 'You need to be logged into your account to access the Invoice. Please login first.', 'woocommerce-delivery-notes' ) . '</p></div>'; // phpcs:ignore
 						// Display a confirmation button to redirect the user to the login page.
-						echo '<a href="' . wp_login_url( $redirect_url ) . '" class="button">Proceed to Login</a>'; // phpcs:ignore
+						echo '<a href="' . wp_login_url( $redirect_url ) . '" class="button">' . __( 'Proceed to Login', 'woocommerce-delivery-notes' ) . '</a>'; // phpcs:ignore
 						exit;
 					} else {
 						wp_safe_redirect( add_query_arg( 'need_login_message', 'true', $redirect_url ) );

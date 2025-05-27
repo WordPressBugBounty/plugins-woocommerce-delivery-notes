@@ -109,7 +109,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 									continue;
 								}
 								// Call the function to get the adjusted quantity.
-								$adjusted_qty = get_adjusted_quantity( $order, $item_id );
+								$adjusted_qty = wcdn_get_adjusted_quantity( $order, $item_id );
 								if ( $adjusted_qty > 0 ) {
 									$total_adjusted_quantity += $adjusted_qty;
 								} else {
@@ -125,7 +125,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<tr>
 									<td class="product-name">
 										<?php do_action( 'wcdn_order_item_before', $product, $order, $item ); ?>
-										<?php get_product_name( $product, $order, $item ); ?>
+										<?php wcdn_get_product_name( $product, $order, $item ); ?>
 										<?php do_action( 'wcdn_order_item_after', $product, $order, $item ); ?>
 									</td>
 									<td class="product-item-price">
@@ -148,9 +148,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 						if ( $totals_arr ) :
 
 							foreach ( $totals_arr as $total ) :
+								$modified_label = apply_filters( 'wcdn_invoice_order_total_label', $total['label'], $order );
 								?>
 								<tr>
-									<td class="total-name"><span><?php echo wp_kses_post( $total['label'] ); ?></span></td>
+									<td class="total-name"><span><?php echo wp_kses_post( $modified_label ); ?></span></td>
 									<td class="total-item-price"></td>
 									<?php if ( 'Total' === $total['label'] ) { ?>
 									<td class="total-quantity"><?php echo wp_kses_post( $total_adjusted_quantity ); ?></td>

@@ -159,7 +159,7 @@ if ( is_null( $parent_order ) ) {
 							continue;
 						}
 						// Call the function to get the adjusted quantity.
-						$adjusted_qty = get_adjusted_quantity( $order, $item_id );
+						$adjusted_qty = wcdn_get_adjusted_quantity( $order, $item_id );
 						if ( $adjusted_qty > 0 ) {
 							$total_adjusted_quantity += $adjusted_qty;
 						} else {
@@ -308,9 +308,10 @@ if ( is_null( $parent_order ) ) {
 				if ( $totals_arr ) :
 
 					foreach ( $totals_arr as $total ) :
+						$modified_label = apply_filters( 'wcdn_invoice_order_total_label', $total['label'], $order );
 						?>
 						<tr>
-							<td class="total-name"><span><?php echo wp_kses_post( $total['label'] ); ?></span></td>
+							<td class="total-name"><span><?php echo wp_kses_post( $modified_label ); ?></span></td>
 							<td class="total-item-price"></td>
 							<?php if ( 'Total' === $total['label'] ) { ?>
 							<td class="total-quantity"><?php echo wp_kses_post( $total_adjusted_quantity ); ?></td>

@@ -175,7 +175,164 @@ if ( is_null( $parent_order ) ) {
 						<tr>
 							<td class="product-name">
 								<?php do_action( 'wcdn_order_item_before', $product, $order, $item ); ?>
-								<?php wcdn_get_product_name( $product, $order, $item ); ?>
+								<span class="name">
+								<?php
+
+								$addon_name  = $item->get_meta( '_wc_pao_addon_name', true );
+								$addon_value = $item->get_meta( '_wc_pao_addon_value', true );
+								$is_addon    = ! empty( $addon_value );
+
+								if ( $is_addon ) { // Displaying options of product addon.
+									$addon_html = '<div class="wc-pao-order-item-name">' . esc_html( $addon_name ) . '</div><div class="wc-pao-order-item-value">' . esc_html( $addon_value ) . '</div></div>';
+
+									echo wp_kses_post( $addon_html );
+								} else {
+
+									$product_id   = $item['product_id'];
+									$prod_name    = get_post( $product_id );
+									$product_name = $prod_name->post_title;
+
+									echo wp_kses_post( apply_filters( 'wcdn_order_item_name', $product_name, $item ) );
+									?>
+									</span>
+
+									<?php
+									$item_meta_fields = apply_filters( 'wcdn_product_meta_data', $item['item_meta'], $item  );
+									if ( null === $item_meta_fields ) {
+										$item_meta_fields = array();
+									}
+									$product_addons            = array();
+									$woocommerce_product_addon = 'woocommerce-product-addons/woocommerce-product-addons.php';
+									if ( in_array( $woocommerce_product_addon, apply_filters( 'active_plugins', get_option( 'active_plugins', array() ) ), true ) ) {
+										$product_id     = $item['product_id'];
+										if ( class_exists( 'WC_Product_Addons_Helper' ) ) {
+											$product_addons = WC_Product_Addons_Helper::get_product_addons( $product_id );
+										}
+									}
+
+									// --- handle YITH add-ons: print labels and remove raw ywapo-* meta to avoid duplicates ---
+									$yith_addon_meta_map = array();
+									if ( isset( $item_meta_fields['_ywapo_meta_data'] ) && is_array( $item_meta_fields['_ywapo_meta_data'] ) ) {
+										foreach ( $item_meta_fields['_ywapo_meta_data'] as $group ) {
+											if ( ! is_array( $group ) ) {
+												continue;
+											}
+											foreach ( (array) $group as $maybe ) {
+												if ( isset( $maybe['addon_id'] ) ) {
+													$option_id                        = isset( $maybe['option_id'] ) ? $maybe['option_id'] : 0;
+													$meta_key                         = 'ywapo-addon-' . $maybe['addon_id'] . '-' . $option_id;
+													$yith_addon_meta_map[ $meta_key ] = $maybe;
+												} else {
+													foreach ( (array) $maybe as $sub ) {
+														if ( isset( $sub['addon_id'] ) ) {
+															$option_id                        = isset( $sub['option_id'] ) ? $sub['option_id'] : 0;
+															$meta_key                         = 'ywapo-addon-' . $sub['addon_id'] . '-' . $option_id;
+															$yith_addon_meta_map[ $meta_key ] = $sub;
+														}
+													}
+												}
+											}
+										}
+										foreach ( $yith_addon_meta_map as $meta_key => $addon ) {
+											if ( isset( $addon['display_label'] ) && isset( $addon['display_value'] ) ) {
+												echo '<br><strong>' . esc_html( $addon['display_label'] ) . ' : </strong>' . wp_kses_post( $addon['display_value'] );
+											} else {
+												if ( isset( $item_meta_fields[ $meta_key ] ) ) {
+													echo '<br><strong>' . esc_html( $meta_key ) . ' : </strong>' . wp_kses_post( $item_meta_fields[ $meta_key ] );
+												}
+											}
+											if ( isset( $item_meta_fields[ $meta_key ] ) ) {
+												unset( $item_meta_fields[ $meta_key ] );
+											}
+										}
+									} // --- end handle YITH add-ons ---
+                  // Extra Product Options (ThemeComplete EPO) support.
+									$epo_data = $item->get_meta( '_tmcartepo_data', true );
+									if ( ! empty( $epo_data ) && is_array( $epo_data ) ) {
+										foreach ( $epo_data as $epo ) {
+											if ( ! empty( $epo['name'] ) && isset( $epo['value'] ) ) {
+												echo '<br>' . wp_kses_post( '<strong>' . $epo['name'] . ' : </strong>' . $epo['value'] );
+											}
+										}
+									}
+
+									if ( version_compare( get_option( 'woocommerce_version' ), '3.0.0', '>=' ) ) {
+										if ( isset( $item['variation_id'] ) && 0 !== $item['variation_id'] ) {
+											$variation = wc_get_product( $item['product_id'] );
+											foreach ( $item_meta_fields as $key => $value ) {
+												if ( ! ( 0 === strpos( $key, '_' ) ) ) {
+													if ( is_array( $value ) ) {
+														continue;
+													}
+													$term_wp        = get_term_by( 'slug', $value, $key );
+													$attribute_name = wc_attribute_label( $key, $variation );
+													if ( ! empty( $product_addons ) ) {
+														foreach ( $product_addons as $addon ) {
+															if ( 'file_upload' === $addon['type'] ) {
+																if ( $key === $addon['name'] ) {
+																	$value = wp_basename( $value );
+																}
+															}
+														}
+													}
+													if ( isset( $term_wp->name ) ) {
+														echo '<br>' . wp_kses_post( '<strong>' . $attribute_name . ' : </strong>' . $term_wp->name );
+													} else {
+														echo '<br>' . wp_kses_post( '<strong>' . $attribute_name . ' : </strong>' . $value );
+													}
+												}
+											}
+										} else {
+											foreach ( $item_meta_fields as $key => $value ) {
+												if ( ! ( 0 === strpos( $key, '_' ) ) ) {
+													if ( is_array( $value ) ) {
+														continue;
+													}
+													if ( ! empty( $product_addons ) ) {
+														foreach ( $product_addons as $addon ) {
+															if ( 'file_upload' === $addon['type'] ) {
+																if ( $key === $addon['name'] ) {
+																	$value = wp_basename( $value );
+																}
+															}
+														}
+													}
+													echo '<br>' . wp_kses_post( '<strong>' . wc_attribute_label( $key ) . '</strong> : ' . $value );
+												}
+											}
+										}
+									} else {
+										$item_meta_new = new WC_Order_Item_Meta( $item_meta_fields, $product );
+										$item_meta_new->display();
+
+									}
+									?>
+									<dl class="extras">
+										<?php if ( $product && $product->exists() && $product->is_downloadable() && $order->is_download_permitted() ) : ?>
+
+											<dt><?php esc_attr_e( 'Download:', 'woocommerce-delivery-notes' ); ?></dt>
+											<dd>
+											<?php
+											// translators: files count.
+											printf( esc_attr__( '%s Files', 'woocommerce-delivery-notes' ), count( $item->get_item_downloads() ) );
+											?>
+											</dd>
+
+										<?php endif; ?>
+
+										<?php
+										wcdn_print_extra_fields( $item );
+										$fields = apply_filters( 'wcdn_order_item_fields', array(), $product, $order, $item );
+
+										foreach ( $fields as $field ) :
+											?>
+
+											<dt><?php echo esc_html( $field['label'] ); ?></dt>
+											<dd><?php echo esc_html( $field['value'] ); ?></dd>
+
+										<?php endforeach; ?>
+									</dl>
+								<?php } ?>
 								<?php do_action( 'wcdn_order_item_after', $product, $order, $item ); ?>
 							</td>
 							<td class="product-item-price">

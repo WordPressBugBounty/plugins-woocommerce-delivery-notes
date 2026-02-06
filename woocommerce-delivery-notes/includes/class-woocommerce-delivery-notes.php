@@ -36,7 +36,7 @@ if ( ! class_exists( 'WooCommerce_Delivery_Notes' ) ) {
 		 *
 		 * @var string $plugin_version Current plugin version number
 		 */
-		public static $plugin_version = '5.8.0';
+		public static $plugin_version = '6.0.0';
 
 		/**
 		 * Plugin URL on current installation
@@ -154,7 +154,7 @@ if ( ! class_exists( 'WooCommerce_Delivery_Notes' ) ) {
 		 * Define WC Constants.
 		 */
 		private function define_constants() {
-			self::$plugin_basefile_path = dirname( dirname( __FILE__ ) ) . '/woocommerce-delivery-notes.php';
+			self::$plugin_basefile_path = dirname( dirname( __FILE__ ) ) . '/woocommerce-delivery-notes.php'; // phpcs:ignore
 			self::$plugin_basefile      = plugin_basename( self::$plugin_basefile_path );
 			self::$plugin_url           = plugin_dir_url( self::$plugin_basefile );
 			self::$plugin_path          = trailingslashit( dirname( self::$plugin_basefile_path ) );
@@ -270,6 +270,7 @@ if ( ! class_exists( 'WooCommerce_Delivery_Notes' ) ) {
 		 * @since 5.0
 		 */
 		public function wcdn_create_dir() {
+			// phpcs:disable
 			$is_action_scheduled = as_next_scheduled_action( 'wcdn_delete_file' );
 			if ( false === $is_action_scheduled ) {
 				as_schedule_recurring_action( time(), 86400, 'wcdn_delete_file' );
@@ -363,6 +364,20 @@ if ( ! class_exists( 'WooCommerce_Delivery_Notes' ) ) {
 		 * Install or update the default settings.
 		 */
 		public function update() {
+			// Admin Permission check.
+			if ( ! is_admin() ) {
+				return;
+			}
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+			if ( ! isset( $_POST['wcdn_general_settings_nonce'] ) ) {
+				return;
+			}
+			$nonce = sanitize_text_field( wp_unslash( $_POST['wcdn_general_settings_nonce'] ) );
+			if ( ! wp_verify_nonce( $nonce, 'wcdn_general_settings_action' ) ) {
+				return;
+			}
 			// Set default template type for invoice, receipt, and delivery-note if not set.
 			if ( false === get_option( 'wcdn_template_type_invoice', false ) ) {
 				add_option( 'wcdn_template_type_invoice', 'yes' );

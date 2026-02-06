@@ -75,7 +75,7 @@ if ( ! class_exists( 'WCDN_Writepanel' ) ) {
 			global $typenow, $pagenow;
 			if ( 'shop_order' === $typenow && 'edit.php' === $pagenow ) {
 				return true;
-			} elseif ( isset( $_GET['page'] ) && 'wc-orders' === $_GET['page'] ) {
+			} elseif ( isset( $_GET['page'] ) && 'wc-orders' === $_GET['page'] ) { // phpcs:ignore
 				return true;
 			} else {
 				return false;
@@ -89,7 +89,7 @@ if ( ! class_exists( 'WCDN_Writepanel' ) ) {
 			global $typenow, $pagenow;
 			if ( 'shop_order' === $typenow && ( 'post.php' === $pagenow || 'post-new.php' === $pagenow ) ) {
 				return true;
-			} elseif ( isset( $_GET['page'] ) && 'wc-orders' === $_GET['page'] && isset( $_GET['action'] ) && 'new' === $_GET['action'] ) {
+			} elseif ( isset( $_GET['page'] ) && 'wc-orders' === $_GET['page'] && isset( $_GET['action'] ) && 'new' === $_GET['action'] ) { // phpcs:ignore
 				return true;
 			} else {
 				return false;
@@ -107,14 +107,21 @@ if ( ! class_exists( 'WCDN_Writepanel' ) ) {
 			?>
 			<?php foreach ( WCDN_Print::$template_registrations as $template_registration ) : ?>
 				<?php if ( 'yes' === get_option( 'wcdn_template_type_' . $template_registration['type'] ) && 'order' !== $template_registration['type'] ) : ?>
-					<?php // phpcs:disable ?>
-					<a href="<?php echo esc_url( wcdn_get_print_link( $wdn_order_id, $template_registration['type'] ) ); ?>" class="button tips print-preview-button <?php echo esc_attr( $template_registration['type'] ); ?>" target="_blank" alt="<?php esc_attr_e( __( $template_registration['labels']['print'], 'woocommerce-delivery-notes' ) ); ?>" data-tip="<?php esc_attr_e( __( $template_registration['labels']['print'], 'woocommerce-delivery-notes' ) ); ?>">
+					<?php // phpcs:disable
+						$print_url = apply_filters(
+							'wcdn_custom_print_url',
+							wcdn_get_print_link( $wdn_order_id, $template_registration['type'] ),
+							$wdn_order_id,
+							$template_registration['type']
+						);
+						?>
+						<a href="<?php echo esc_url( $print_url ); ?>
+						" class="button tips print-preview-button <?php echo esc_attr( $template_registration['type'] ); ?>" target="_blank" alt="<?php esc_attr_e( __( $template_registration['labels']['print'], 'woocommerce-delivery-notes' ) ); ?>" data-tip="<?php esc_attr_e( __( $template_registration['labels']['print'], 'woocommerce-delivery-notes' ) ); ?>">
 						<?php esc_html_e( $template_registration['labels']['print'], 'woocommerce-delivery-notes' ); ?>
 					</a>
 					<?php // phpcs:enable ?>
 				<?php endif; ?>
 			<?php endforeach; ?>
-
 			<span class="print-preview-loading spinner"></span>
 			<?php
 		}
@@ -165,9 +172,8 @@ if ( ! class_exists( 'WCDN_Writepanel' ) ) {
 			$print_url    = htmlspecialchars_decode( wcdn_get_print_link( $post_ids, $template_type ) );
 			$templatetype = ucwords( str_replace( '-', ' ', $template_type ) );
 
-
 			// WooCommerce orders page URL.
-			if ( class_exists( '\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController' ) && 
+			if ( class_exists( '\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController' ) &&
 				wc_get_container()->get( \Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
 				$orders_page_url = admin_url( 'admin.php?page=wc-orders' );
 			} else {
@@ -187,6 +193,7 @@ if ( ! class_exists( 'WCDN_Writepanel' ) ) {
 			}
 
 			// Output the modal with Vue.js.
+			// phpcs:disable
 			?>
 			<div id="custom-modal-app">
 				<div v-if="showModal" class="custom-modal">
@@ -210,7 +217,7 @@ if ( ! class_exists( 'WCDN_Writepanel' ) ) {
 					</div>
 				</div>
 			</div>
-			<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+			<script src="<?php echo esc_url( WooCommerce_Delivery_Notes::$plugin_url . 'assets/js/vue.js' ); ?>"></script>
 			<script>
 				document.addEventListener("DOMContentLoaded", function() {
 					new Vue({
@@ -365,10 +372,10 @@ if ( ! class_exists( 'WCDN_Writepanel' ) ) {
 		public function confirm_bulk_actions() {
 			if ( $this->is_order_edit_page() ) {
 				foreach ( WCDN_Print::$template_registrations as $template_registration ) {
-					if ( isset( $_REQUEST[ 'printed_' . $template_registration['type'] ] ) ) {
+					if ( isset( $_REQUEST[ 'printed_' . $template_registration['type'] ] ) ) { // phpcs:ignore
 
 						// use singular or plural form.
-						$total   = isset( $_REQUEST['total'] ) ? absint( $_REQUEST['total'] ) : 0;
+						$total   = isset( $_REQUEST['total'] ) ? absint( $_REQUEST['total'] ) : 0; // phpcs:ignore
 						$message = $total <= 1 ? $message = $template_registration['labels']['message'] : $template_registration['labels']['message_plural'];
 
 						// Print URL - Fix Issue #214: Reflected XSS Vulnerability in Plugin.
@@ -378,7 +385,7 @@ if ( ! class_exists( 'WCDN_Writepanel' ) ) {
 						if ( '' !== $print_url ) {
 							?>
 							<div id="woocommerce-delivery-notes-bulk-print-message" class="updated">
-								<p><?php wp_kses_post( $message, 'woocommerce-delivery-notes' ); ?>
+								<p><?php echo wp_kses_post( $message, 'woocommerce-delivery-notes' ); ?>
 								<a href="<?php echo $print_url; // phpcs:ignore ?>" target="_blank" class="print-preview-button" id="woocommerce-delivery-notes-bulk-print-button"><?php esc_attr_e( 'Print now', 'woocommerce-delivery-notes' ); ?></a> <span class="print-preview-loading spinner"></span></p>
 							</div>
 							<?php

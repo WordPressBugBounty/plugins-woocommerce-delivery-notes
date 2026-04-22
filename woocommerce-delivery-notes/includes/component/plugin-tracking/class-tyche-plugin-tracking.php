@@ -10,9 +10,11 @@
  * @since       1.2
  */
 
+namespace Tyche\WCDN;
+
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'Tyche_Plugin_Tracking' ) ) {
+if ( ! class_exists( 'Tyche\WCDN\Tyche_Plugin_Tracking' ) ) {
 
 	/**
 	 * Plugin Tracking.
@@ -66,8 +68,9 @@ if ( ! class_exists( 'Tyche_Plugin_Tracking' ) ) {
 		/**
 		 * Construct
 		 *
-		 * @since 1.1
 		 * @param array $options Options.
+		 *
+		 * @since 1.1
 		 */
 		public function __construct( $options ) {
 
@@ -81,7 +84,7 @@ if ( ! class_exists( 'Tyche_Plugin_Tracking' ) ) {
 			add_action( 'admin_notices', array( &$this, 'display_tracker_html_template' ) );
 			add_filter( 'cron_schedules', array( &$this, 'cron_schedule' ) );
 			add_action( 'admin_init', array( &$this, 'init_tracker' ) );
-			$this->schedule_cron_job();
+			add_action( 'init', array( &$this, 'schedule_cron_job' ) );
 		}
 
 		/**
@@ -118,7 +121,7 @@ if ( ! class_exists( 'Tyche_Plugin_Tracking' ) ) {
 		public function cron_schedule( $schedules ) {
 			$schedules['once_in_week'] = array(
 				'interval' => 604800,  // one week in seconds.
-				'display'  => __( 'Once in a Week', $this->plugin_locale ), // phpcs:ignore
+				'display'  => __( 'Once in a Week', $this->plugin_locale ), // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain -- dynamic domain from plugin config
 			);
 
 			return $schedules;
@@ -147,7 +150,7 @@ if ( ! class_exists( 'Tyche_Plugin_Tracking' ) ) {
 		 * Called when the dismiss icon is clicked on the notice.
 		 */
 		public function dismiss_notice() {
-			$nonce = $_POST['tracking_notice'];//phpcs:ignore
+			$nonce = isset( $_POST['tracking_notice'] ) ? sanitize_text_field( wp_unslash( $_POST['tracking_notice'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified on the next line
 			if ( ! wp_verify_nonce( $nonce, 'tracking_notice' ) ) {
 				return;
 			}
@@ -162,7 +165,7 @@ if ( ! class_exists( 'Tyche_Plugin_Tracking' ) ) {
 		 */
 		public function send_tracking_data() {
 
-			$allow_tracking = get_option( $this->plugin_short_name . '_allow_tracking' . '' ); // phpcs:ignore
+			$allow_tracking = get_option( $this->plugin_short_name . '_allow_tracking' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralDomain -- dynamic option key from plugin config
 
 			if ( '' === $allow_tracking ) {
 				return;
@@ -225,13 +228,13 @@ if ( ! class_exists( 'Tyche_Plugin_Tracking' ) ) {
 				return;
 			}
 
-			$tracker_option = isset( $_GET[ $this->plugin_short_name . '_tracker_optin' ] ) ? $this->plugin_short_name . '_tracker_optin' : ( isset( $_GET[ $this->plugin_short_name . '_tracker_optout' ] ) ? $this->plugin_short_name . '_tracker_optout' : '' ); // phpcs:ignore
+			$tracker_option = isset( $_GET[ $this->plugin_short_name . '_tracker_optin' ] ) ? $this->plugin_short_name . '_tracker_optin' : ( isset( $_GET[ $this->plugin_short_name . '_tracker_optout' ] ) ? $this->plugin_short_name . '_tracker_optout' : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified on next line
 
 			if ( '' === $tracker_option || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET[ $this->plugin_short_name . '_tracker_nonce' ] ) ), $tracker_option ) ) {
 				return;
 			}
 
-			update_option( $this->plugin_short_name . '_allow_tracking', isset( $_GET[ $this->plugin_short_name . '_tracker_optin' ] ) ? 'yes' : 'no' ); // phpcs:ignore
+			update_option( $this->plugin_short_name . '_allow_tracking', isset( $_GET[ $this->plugin_short_name . '_tracker_optin' ] ) ? 'yes' : 'no' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce already verified above
 			$this->send_tracking_data();
 			do_action( $this->plugin_short_name . '_init_tracker_completed' );
 		}
@@ -250,17 +253,22 @@ if ( ! class_exists( 'Tyche_Plugin_Tracking' ) ) {
 			echo '<input type="hidden" id="admin_url" value="' . esc_url( get_admin_url() ) . '"/>';
 
 			if ( '' === get_option( $this->plugin_short_name . '_allow_tracking', '' ) ) { ?>
-				<div class="<?php echo esc_attr( $this->plugin_short_name ); ?>-message <?php echo esc_attr( $this->plugin_short_name ); ?>-tracker notice notice-info is-dismissible" style="position: relative;">
-					<div style="position: absolute;"><img class="site-logo" src= "<?php echo esc_url( $this->api_url . '/assets/plugin-tracking/images/site-logo.jpg?v=' . $this->version ); ?> "></div>
-					<p style="margin: 10px 0 10px 130px; font-size: medium;">
-						<?php print( sprintf( __( 'Want to help make %1$s even more awesome? Allow %1$s to collect non-sensitive diagnostic data and usage information and get 20%% off on your next purchase. <a href="%2$s">Find out more</a>.', 'woocommerce-delivery-notes' ), $this->plugin_name, $this->blog_link ) );  //phpcs:ignore ?> 
-					</p>
-					<p class="submit">
-						<a class="button-primary button button-large" href="<?php echo esc_url( wp_nonce_url( add_query_arg( $this->plugin_short_name . '_tracker_optin', 'true' ), $this->plugin_short_name . '_tracker_optin', $this->plugin_short_name . '_tracker_nonce' ) ); ?>"><?php esc_html_e( 'Allow', $this->plugin_locale ); //phpcs:ignore ?></a>
-						<a class="button-secondary button button-large skip"  href="<?php echo esc_url( wp_nonce_url( add_query_arg( $this->plugin_short_name . '_tracker_optout', 'true' ), $this->plugin_short_name . '_tracker_optout', $this->plugin_short_name . '_tracker_nonce' ) ); ?>"><?php esc_html_e( 'No thanks', $this->plugin_locale ); //phpcs:ignore ?></a>
-					</p>
-				</div>
-					<?php
+<div class="<?php echo esc_attr( $this->plugin_short_name ); ?>-message <?php echo esc_attr( $this->plugin_short_name ); ?>-tracker notice notice-info is-dismissible"
+	style="position: relative;">
+	<div style="position: absolute;"><img class="site-logo"
+			src="<?php echo esc_url( $this->api_url . '/assets/plugin-tracking/images/site-logo.jpg?v=' . $this->version ); ?> ">
+	</div>
+	<p style="margin: 10px 0 10px 130px; font-size: medium;">
+		<?php /* translators: 1. Plugin name, 2. URL to find out more about usage tracking */ print( sprintf( __( 'Want to help make %1$s even more awesome? Allow %1$s to collect non-sensitive diagnostic data and usage information and get 20%% off on your next purchase. <a href="%2$s" target="_blank">Find out more</a>.', 'woocommerce-delivery-notes' ), $this->plugin_name, $this->blog_link ) );  //phpcs:ignore ?>
+	</p>
+	<p class="submit">
+		<a class="button-primary button button-large"
+			href="<?php echo esc_url( wp_nonce_url( add_query_arg( $this->plugin_short_name . '_tracker_optin', 'true' ), $this->plugin_short_name . '_tracker_optin', $this->plugin_short_name . '_tracker_nonce' ) ); ?>"><?php esc_html_e( 'Allow', $this->plugin_locale ); //phpcs:ignore ?></a>
+		<a class="button-secondary button button-large skip"
+			href="<?php echo esc_url( wp_nonce_url( add_query_arg( $this->plugin_short_name . '_tracker_optout', 'true' ), $this->plugin_short_name . '_tracker_optout', $this->plugin_short_name . '_tracker_nonce' ) ); ?>"><?php esc_html_e( 'No thanks', $this->plugin_locale ); //phpcs:ignore ?></a>
+	</p>
+</div>
+				<?php
 			}
 		}
 
@@ -294,7 +302,7 @@ if ( ! class_exists( 'Tyche_Plugin_Tracking' ) ) {
 			$memory = wc_let_to_num( WP_MEMORY_LIMIT );
 
 			if ( function_exists( 'memory_get_usage' ) ) {
-				$system_memory = wc_let_to_num( @ini_get( 'memory_limit' ) ); // phpcs:ignore
+				$system_memory = wc_let_to_num( @ini_get( 'memory_limit' ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- ini_get() failure is non-fatal here; fallback to WP_MEMORY_LIMIT
 				$memory        = max( $memory, $system_memory );
 			}
 

@@ -1,16 +1,17 @@
-	=== Print Invoice & Delivery Notes for WooCommerce ===
+=== Print Invoice & Delivery Notes for WooCommerce ===
 
 Contributors: ashokrane, tychesoftwares
-Donate link: https://www.paypal.me/TycheSoftwares
 Tags: packing slips, invoice, pdf invoice, delivery notes, woocommerce print invoice
-Requires at least: 4.4
-Tested up to: 6.9.1
-Author URI: https://www.tychesoftwares.com/
-Stable tag: 6.0.0
+Requires at least: 6.0
+Requires PHP: 7.4
+Tested up to: 6.9.4
+WC requires at least: 5.0.0
+WC tested up to: 10.7.0
+Stable tag: 7.0.0
 License: GPLv3 or later
-License URI: http://www.opensource.org/licenses/gpl-license.php
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Create and print PDF invoices, delivery notes and receipts for your WooCommerce orders. Choose your document format from multiple templates.  
+Create and print PDF invoices, delivery notes, receipts, credit notes, and packing slips for your WooCommerce orders.
 
 == Description ==
 
@@ -18,68 +19,90 @@ Create and print PDF invoices, delivery notes and receipts for your WooCommerce 
 >
 > The only BOGO plugin with a revenue tracking feature. **Now, at an attractive introductory price**. [Check out our new plugin here](https://www.tychesoftwares.com/products/woocommerce-flexi-bogo-plugin/?utm_source=wprepo&utm_medium=pluginpagetop&utm_campaign=WCDeliveryNotes).
 
-Print Invoice & Delivery Notes for WooCommerce allows store owners to print invoices, delivery notes, and receipts for WooCommerce orders.
+Print Invoice & Delivery Notes for WooCommerce allows store owners to generate, customise, and print order documents directly from the WooCommerce admin. Supports five document types: invoices, receipts, delivery notes, credit notes, and packing slips.
 
-Store owners can print invoices, attach them to emails, and allow customers to download invoices from their account page.
+Store owners can generate PDFs, attach them to WooCommerce order emails, and allow customers to access and print documents from their account page and order emails.
 
-Ideal for stores that want a simple way to manage WooCommerce invoices and delivery notes for customers and accounting, without creating them manually.
+Ideal for stores that want a straightforward way to manage order documents for customers and accounting, without creating them manually.
 
 
 == Key Features ==
 
-= Print Invoices, Delivery Notes, and Receipts =
+= Five Document Types =
 
-* Adds an **Order Printing** panel to the individual order edit page for quick access
-* Provides print options for invoices, delivery notes, and receipts directly from the WooCommerce **Orders** page
-* Generate documents while managing orders to streamline order processing and fulfilment
+* **Invoice** – professional billing document with sequential numbering
+* **Receipt** – payment confirmation document
+* **Delivery Note** – dispatch document for shipments
+* **Packing Slip** – warehouse-ready picking document
+* **Credit Note** – refund and return document
 
-= Add Print Links to Order Emails =
+= Customisable Templates =
 
-* Display invoice and delivery note print links in WooCommerce order emails
-* Control which order statuses (Processing, Completed, etc.) include print links
-* Allows customers and admins to open and print order documents directly from emails
+Each template is independently configurable with a live preview:
 
-= Customize Invoice, Receipt, and Delivery Note Templates =
+* Company logo with adjustable scale and alignment
+* Document title, shop name, address, phone, and email
+* Billing and shipping address labels and styles
+* Font sizes, font weight, text colours, and alignment per section
+* Watermark with custom text, opacity, angle, and repeat layout
+* Footer text, policies, complimentary close, and customer notes
+* Enable or disable individual sections per template
 
-Templates can be customized from the plugin settings to match your store branding. Choose from two built-in layouts and configure:
+= Sequential Invoice Numbering =
 
-* Company logo, name, and address
-* Invoice titles and numbering formats
-* Billing and shipping details
-* Payment information
-* Footer text, policies, and customer notes
-* Customer contact details
+* Customisable number format with placeholders: {next_number}, {order_number}, {order_date}, {year}, {month}, {customer_name}, and more
+* Optional yearly reset with a configurable starting number per year
+* Manually adjustable next invoice number
+
+= PDF Generation and Storage =
+
+* Generate and store PDFs for all document types
+* Configurable PDF expiration — automatically delete stored files after a set number of days
+* Customisable PDF filename per template using order data placeholders
+* Attach PDFs automatically to WooCommerce order emails
+
+= Add Print Links and PDF Attachments to Emails =
+
+* Attach PDFs to customer and admin WooCommerce emails
+* Control which order statuses trigger attachments
+* Select specific WooCommerce email types to attach to
+* Add print links to customer and admin emails with customisable link text
+* Send PDFs to additional custom email addresses
 
 = Bulk Print WooCommerce Order Documents =
 
 * Select multiple orders from the WooCommerce Orders page
-* Print invoices, delivery notes, or receipts using **Bulk Actions**
-* Ideal for stores handling large order volumes
+* Print or generate merged PDFs for multiple orders at once using **Bulk Actions**
 
-= Customer Access to Invoices and Receipts =
+= Customer Access to Documents =
 
-Customers can print invoices and receipts from:
-
-* **My Account → Orders** page
-* Order confirmation and order-related emails
-
-This improves the post-purchase experience and reduces support requests.
+* Print buttons on the **My Account → Orders** page
+* Print buttons on the order confirmation (thank you) page
+* Print links in order emails
+* Guest access via secure tokens — no login required
+* Customisable button labels per document type
 
 == Additional Features ==
 
-* **Live preview for templates** – see changes in real-time before saving
-* **Adjust logo size** – set custom width and height for your company logo
-* Add company logo, name, and address to invoices
-* Customize invoice numbering with prefix and suffix
-* Display print links in emails based on order status
-* Store generated PDF files for a configurable duration
-* Supports sequential and custom invoice numbers
-* Keeps invoices accurate when orders are refunded
-* Advanced customization available via hooks and filters
+* **Live preview** – see template changes in real time before saving
+* **RTL support** – configurable text direction for right-to-left languages
+* **Dashboard onboarding** – setup checklist to guide initial configuration
+* **Keeps documents accurate when orders are refunded**
+* **Advanced extensibility** via hooks and filters
+* **Theme overrides** – copy templates to your theme folder to customise HTML output without losing changes on update
 
 == Developer Support and Extensibility ==
 
-The plugin provides hooks and filters for developers to customize invoice templates, numbering logic, and other behaviors.
+The plugin exposes hooks and filters for developers to extend document output, PDF generation, and email delivery. Key filter categories include:
+
+* **Template rendering** – `wcdn_template_data`, `wcdn_template_css`, `wcdn_locate_template`, `wcdn_dynamic_css`
+* **Order item display** – `wcdn_order_item_name`, `wcdn_order_item_quantity`, `wcdn_formatted_item_price`, `wcdn_product_meta_data`, `wcdn_order_item_fields`
+* **Invoice number and date** – `wcdn_order_invoice_number`, `wcdn_order_invoice_date`
+* **PDF output** – `wcdn_pdf_paper_size`, `wcdn_pdf_orientation`, `wcdn_pdf_dpi`, `wcdn_pdf_filename`
+* **Email delivery** – `wcdn_administrator_emails`, `wcdn_custom_email_recipients`, `wcdn_custom_email_message_body`
+* **Document availability** – `wcdn_template_types_from_order`, `wcdn_allowed_statuses_[template]`
+
+Action: `wcdn_after_pdf_generated` fires after a PDF is created.
 
 == Need Help? ==
 
@@ -90,7 +113,7 @@ If you find the plugin useful, a ⭐⭐⭐⭐⭐ rating is always appreciated �
 
 = Contributing =
 
-If you have a patch, or stumbled upon an issue with the source code that isn't a [WooCommerce issue](https://github.com/woothemes/woocommerce/issues?labels=Bug&milestone=22&state=open), you can contribute this back [on GitHub](https://github.com/TycheSoftwares/woocommerce-delivery-notes).
+If you have a patch, or stumbled upon an issue with the source code that isn't a [WooCommerce issue](https://github.com/woocommerce/woocommerce/issues?labels=Bug&state=open), you can contribute this back [on GitHub](https://github.com/TycheSoftwares/woocommerce-delivery-notes).
 
 = Translating =
 
@@ -100,29 +123,29 @@ When your language is missing you can contribute a translation to the [GitHub re
 
 1. **[Flexi BOGO for WooCommerce](https://www.tychesoftwares.com/products/woocommerce-flexi-bogo-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Flexi BOGO for WooCommerce")**
 
-1. **[Abandoned Cart Pro for WooCommerce](https://www.tychesoftwares.com/store/premium-plugins/woocommerce-abandoned-cart-pro/?utm_source=wprepo&utm_medium=otherprolink&utm_campaign=WCDeliveryNotes "Abandoned Cart Pro for WooCommerce")**
+2. **[Abandoned Cart Pro for WooCommerce](https://www.tychesoftwares.com/products/woocommerce-abandoned-cart-pro-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Abandoned Cart Pro for WooCommerce")**
 
-2. **[Booking & Appointment Plugin for WooCommerce](https://www.tychesoftwares.com/store/premium-plugins/woocommerce-booking-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Booking & Appointment Plugin for WooCommerce")**
+3. **[Booking & Appointment Plugin for WooCommerce](https://www.tychesoftwares.com/products/woocommerce-booking-and-appointment-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Booking & Appointment Plugin for WooCommerce")**
 
-3. **[Order Delivery Date Pro for WooCommerce](https://www.tychesoftwares.com/store/premium-plugins/order-delivery-date-for-woocommerce-pro-21/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Order Delivery Date Pro for WooCommerce")**
+4. **[Order Delivery Date Pro for WooCommerce](https://www.tychesoftwares.com/products/woocommerce-order-delivery-date-pro-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Order Delivery Date Pro for WooCommerce")**
 
-4. **[Product Delivery Date Pro for WooCommerce](https://www.tychesoftwares.com/store/premium-plugins/product-delivery-date-pro-for-woocommerce/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Product Delivery Date Pro for WooCommerce")**
+5. **[Product Delivery Date Pro for WooCommerce](https://www.tychesoftwares.com/products/woocommerce-product-delivery-date-pro-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Product Delivery Date Pro for WooCommerce")**
 
-5. **[Deposits For WooCommerce](https://www.tychesoftwares.com/store/premium-plugins/deposits-for-woocommerce/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Deposits For WooCommerce")**
+6. **[Deposits For WooCommerce](https://www.tychesoftwares.com/products/woocommerce-deposit-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Deposits For WooCommerce")**
 
-6. **[Payment Gateway Based Fees and Discounts for WooCommerce - Pro](https://www.tychesoftwares.com/store/premium-plugins/payment-gateway-based-fees-and-discounts-for-woocommerce-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Payment Gateway Based Fees and Discounts for WooCommerce - Pro")**
+7. **[Payment Gateway Based Fees and Discounts for WooCommerce - Pro](https://www.tychesoftwares.com/products/woocommerce-payment-gateway-based-fees-and-discounts-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Payment Gateway Based Fees and Discounts for WooCommerce - Pro")**
 
-7. **[Custom Order Status for WooCommerce - Pro](https://www.tychesoftwares.com/store/premium-plugins/custom-order-status-woocommerce/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Custom Order Status for WooCommerce - Pro")**
+8. **[Custom Order Status for WooCommerce - Pro](https://www.tychesoftwares.com/products/woocommerce-custom-order-status-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Custom Order Status for WooCommerce - Pro")**
 
-8. **[Custom Order Numbers for WooCommerce - Pro](https://www.tychesoftwares.com/store/premium-plugins/custom-order-numbers-woocommerce/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Custom Order Numbers for WooCommerce - Pro")**
+9. **[Custom Order Numbers for WooCommerce - Pro](https://www.tychesoftwares.com/products/woocommerce-custom-order-numbers-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Custom Order Numbers for WooCommerce - Pro")**
 
-9. **[Product Input Fields for WooCommerce - Pro](https://www.tychesoftwares.com/store/premium-plugins/product-input-fields-for-woocommerce/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Product Input Fields for WooCommerce - Pro")**
+10. **[Product Input Fields for WooCommerce - Pro](https://www.tychesoftwares.com/products/woocommerce-product-input-fields-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Product Input Fields for WooCommerce - Pro")**
 
-10. **[Call for Price for WooCommerce - Pro](https://www.tychesoftwares.com/store/premium-plugins/woocommerce-call-for-price-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Call for Price for WooCommerce - Pro")**
+11. **[Call for Price for WooCommerce - Pro](https://www.tychesoftwares.com/products/woocommerce-call-for-price-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Call for Price for WooCommerce - Pro")**
 
-11. **[Price based on User Role for WooCommerce - Pro](https://www.tychesoftwares.com/store/premium-plugins/price-user-role-woocommerce/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Price based on User Role for WooCommerce - Pro")**
+12. **[Price based on User Role for WooCommerce - Pro](https://www.tychesoftwares.com/products/woocommerce-price-user-role-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Price based on User Role for WooCommerce - Pro")**
 
-12. **[Currency per Product for WooCommerce - Pro](https://www.tychesoftwares.com/store/premium-plugins/currency-per-product-for-woocommerce/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Currency per Product for WooCommerce - Pro")**
+13. **[Currency per Product for WooCommerce - Pro](https://www.tychesoftwares.com/products/woocommerce-currency-per-product-plugin/?utm_source=wprepo&utm_medium=link&utm_campaign=WCDeliveryNotes "Currency per Product for WooCommerce - Pro")**
 
 **Some of our other free plugins:**
 
@@ -146,18 +169,17 @@ When your language is missing you can contribute a translation to the [GitHub re
 
 10. **[Currency per Product for WooCommerce](https://wordpress.org/plugins/currency-per-product-for-woocommerce/ "Currency per Product for WooCommerce")**
 
-**[Developer Documentation](https://www.tychesoftwares.com/docs/print-invoice-apidocs/index.html "Developer Documentation")**
-
 == Installation ==
 
 = Minimum Requirements =
 
-* WooCommerce 2.2 or later
-* WordPress 4.4 or later
+* PHP 7.4 or later
+* WordPress 6.0 or later
+* WooCommerce 5.0 or later
 
 = Automatic installation =
 
-Automatic installation is the easiest option as WordPress handles the file transfers itself and you don’t need to leave your web browser. To do an automatic install of WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
+Automatic installation is the easiest option as WordPress handles the file transfers itself and you don’t need to leave your web browser. To do an automatic install of Print Invoice & Delivery Notes for WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
 
 In the search field type “WooCommerce Print Invoice” and click Search Plugins. Once you’ve found the plugin you can view details about it such as the the point release, rating and description. Most importantly of course, you can install it by simply clicking “Install Now”.
 
@@ -167,237 +189,75 @@ The manual installation method involves downloading the plugin and uploading it 
 
 == Frequently Asked Questions ==
 
-= How to prevent that the Website URL and page numbers are printed? =
+= How do templates work? =
 
-You can find an option in the print window of your browser to hide those. This is a browser specific option that can't be controlled by the plugin. Please read the browser help for more information.
+Templates are pre-designed layouts for your documents. You can enable or disable each template (Invoice, Receipt, Delivery Note, etc.) and customize their sections, fonts, colors, and content. Changes are reflected in real-time in the preview pane.
 
-= Why are my bulk printed orders not splited to separate pages? =
+= Why does the order print show a 404 page? =
 
-Your browser is to old to create the page breaks correctly. Try to update it to the latest version or use another browser.
-
-= Even though the shipping and billing address is the same, both are still shown, why? =
-
-It depends on your WooCommerce settings. Addresses are displayed the same way as on the WooCommerce account page. Only one address is printed in case you disabled alternative shipping addresses or the whole shipping. In all other cases both addresses are shown.
-
-= It prints the 404 page instead of the order, how to correct that? =
-
-This is most probably due to the permalink settings. Go either to the WordPress Permalink or the WooCommerce Print Settings and save them again.
-
-If that didn't help, go to the WooCommerce 'Accounts' settings tab and make sure that for 'My Account Page' a page is selected.  
-
-= How do I quickly change the font of the invoice and delivery note? =
-
-You can change the font with CSS. Use the `wcdn_head` hook and then write your own CSS code. It's best to place the code in the `functions.php` file of your theme. 
-
-An example that changes the font and makes the addresses very large. Paste the code in the `functions.php` file of your theme:
-
-`
-function example_serif_font_and_large_address() {
-	?>
-		<style>	
-			`#page {
-				font-size: 1em;
-				font-family: Georgia, serif;
-			}
-			
-			.order-addresses address {
-				font-size: 2.5em;
-				line-height: 125%;
-			}
-		</style>
-	<?php
-`}
-add_action( 'wcdn_head', 'example_serif_font_and_large_address', 20 );
-`
-
-= Can I hide the prices on the delivery note? =
-
-Sure, the easiest way is to hide them with some CSS that is hooked in with `wcdn_head`.
-
-An example that hides the whole price column and the totals. Paste the code in the `functions.php` file of your theme:
-
-`
-function example_price_free_delivery_note() {
-	?>
-		<style>
-			.delivery-note .head-item-price,
-			.delivery-note .head-price, 
-			.delivery-note .product-item-price,
-			.delivery-note .product-price,
-			.delivery-note .order-items tfoot {
-				display: none;
-			}
-			.delivery-note .head-name,
-			.delivery-note .product-name {
-				width: 50%;
-			}
-			.delivery-note .head-quantity,
-			.delivery-note .product-quantity {
-				width: 50%;
-			}
-			.delivery-note .order-items tbody tr:last-child {
-				border-bottom: 0.24em solid black;
-			}
-		</style>
-	<?php
-}
-add_action( 'wcdn_head', 'example_price_free_delivery_note', 20 );
-`
-
-= I use the receipt in my POS, can I style it? =
-
-Sure, you can style with CSS, very much the same way as the delivery note or invoice. 
-
-An example that hides the addresses. Paste the code in the `functions.php` file of your theme:
-
-`
-function example_address_free_receipt() {
-	?>
-		<style>
-			.content {
-				padding: 4% 6%;
-			}
-			.company-address,
-			.order-addresses {
-				display: none;
-			}
-			.order-info li span {
-				display: inline-block;
-				float: right;
-			}
-			.order-thanks {
-				margin-left: inherit;
-			}
-		</style>
-	<?php
-}
-add_action( 'wcdn_head', 'example_address_free_receipt', 20 );
-`
-
-= Is it possible to remove a field from the order info section? =
-
-Yes, use the `wcdn_order_info_fields` filter hook. It returns all the fields as array. Unset or rearrange the values as you like.
-
-An example that removes the 'Payment Method' field. Paste the code in the `functions.php` file of your theme:
-
-`
-function example_removed_payment_method( $fields ) {
-	unset( $fields['payment_method'] );
-	return $fields;
-}
-add_filter( 'wcdn_order_info_fields', 'example_removed_payment_method' );
-`
-
-=  How can I add some more fields to the order info section? =
-
-Use the `wcdn_order_info_fields` filter hook. It returns all the fields as array. Read the WooCommerce documentation to learn how you get custom checkout and order fields. Tip: To get custom meta field values you will most probably need the `get_post_meta( $order->get_id(), 'your_meta_field_name', true);` function and of course the `your_meta_field_name`. 
-
-An example that adds a 'VAT' and 'Customer Number' field to the end of the list. Paste the code in the `functions.php` file of your theme:
-
-`
-function example_custom_order_fields( $fields, $order ) {
-	$new_fields = array();
-		
-	if( get_post_meta( $order->get_id(), 'your_meta_field_name', true ) ) {
-		$new_fields['your_meta_field_name'] = array( 
-			'label' => 'VAT',
-			'value' => get_post_meta( $order->get_id(), 'your_meta_field_name', true )
-		);
-	}
-	
-	if( get_post_meta( $order->get_id(), 'your_meta_field_name', true ) ) {
-		$new_fields['your_meta_field_name'] = array( 
-			'label' => 'Customer Number',
-			'value' => get_post_meta( $order->get_id(), 'your_meta_field_name', true )
-		);
-	}
-	
-	return array_merge( $fields, $new_fields );
-}
-add_filter( 'wcdn_order_info_fields', 'example_custom_order_fields', 10, 2 );
-`
-
-=  What about the product image, can I add it to the invoice and delivery note? =
-
-Yes, use the `wcdn_order_item_before` action hook. It allows you to add html content before the item name.
-
-An example that adds a 40px large product image. Paste the code in the `functions.php` file of your theme:
-
-`
-function example_product_image( $product ) {	
-	if( ( '' !== $product->get_id() ) && has_post_thumbnail( $product->get_id() ) ) {
-		 echo get_the_post_thumbnail( $product->get_id(), array( 40, 40 ), array( 'loading' => false ) );
-	}
-}
-add_action( 'wcdn_order_item_before', 'example_product_image' );
-`
-
-= How can I differentiate between invoice and delivery note through CSS? =
-
-The `body` tag contains a class that specifies the template type. The class can be `invoice` or `delivery-note`. You can prefix your style rules to only target one template. For example you could rise the font size for the addresses on the right side:
-
-`
-.invoice .billing-address {
-	font-size: 2em;
-}
-
-.delivery-note .shipping-address {
-	font-size: 2em;
-}
-`
-
-= How do I customize the look of the invoice and delivery note? =
-
-You can use the techniques from the questions above. Or you consider the `wcdn_head` hook to enqueue your own stylesheet. Or for full control, copy the file `style.css` from `woocommerce-delivery-notes/templates/print-order` to `yourtheme/woocommerce/print-order` and start editing it. 
-
-Note: Create the `woocommerce` and `print-order` folders if they do not exist. This way your changes won't be overridden on plugin updates.
-
-= I would like to move the logo to the bottom, put the products between the shipping and billing address and rotate it by 90 degrees, how can I do that? =
-
-Well, first try it with CSS and some filter/action hooks, maybe the questions above can help you. If this isn't enough, you are free to edit the HTML and CSS of the template. Consider this solution only, if you really know some HTML, CSS and PHP! Most probably you want to edit the `print-content.php` and `style.css`. Copy the files from `woocommerce-delivery-notes/templates/print-order` to `yourtheme/woocommerce/print-order` and start editing them. 
-
-Note: Create the `woocommerce` and `print-order` folders if they do not exists. This way your changes won't be overridden on plugin updates.
-
-= Is there a list of all action and filter hooks? =
-
-Unfortunately there isn't yet. But you can look directly at the template files to see what is available. 
-
-= Which template functions are available? =
-
-You can use the functions from WordPress, WooCommerce and every installed plugin or activated theme. You can find all plugin specific functions in the `wcdn-template-functions.php` file. In addition the `$order`variable in the template is just a normal `WC_Order` instance. 
-
-= Can I download the order as PDF instead of printing it out? =
-
-No, this isn't possible. However, you can store the PDF and attach it to your email.
-
-= I need some more content on the order, how can I add it? =
-
-The plugin uses the exact same content as WooCommerce. If the content isn't available in WooCommerce, then it will neither be in the delivery note and invoice. In case you have some special needs, you first have to enhance WooCommerce to solve your issue. Afterwards you can integrate the solution into the invoice and delivery note template via hooks.
+This usually happens due to permalink settings — resave your WordPress Permalinks or WooCommerce Print Settings and ensure a My Account Page is selected in WooCommerce settings.
 
 = How can I translate the plugin? =
 
-Upload your language file to `/wp-content/languages/plugins/` (create this folder if it doesn't exist). WordPress will then load the language. Make sure you use the same locale as in your configuration and the correct plugin locale i.e. `woocommerce-delivery-notes-it_IT.mo/.po`. 
+Upload your .mo and .po files to `/wp-content/languages/plugins/` using the correct locale (e.g. `woocommerce-delivery-notes-it_IT.mo`).
 
-Please [contribute your translation](https://github.com/TycheSoftwares/woocommerce-delivery-notes#translating) to include it in the distribution.
+= Does this plugin modify order data? =
+
+No, the plugin only reads WooCommerce order data to generate documents and does not modify any order information.
+
+= What is the difference between an invoice and a receipt? =
+
+An invoice requests payment before it is made, while a receipt confirms that payment has already been received.
+
+= Why can't customers see the Print button? =
+
+Ensure the print button option is enabled, the document template is active, and order status rules are properly configured.
+
+= How do I enable automatic PDF attachments to emails? =
+
+Enable PDF attachments for customer or admin emails in the Documents tab, and configure order status rules if needed.
+
+= Is the plugin GDPR compliant? =
+
+Yes, the plugin stores minimal data beyond WooCommerce, but storing generated PDFs should be disclosed in your privacy policy.
+
+= Can I change item prices in documents? =
+
+No, document prices come directly from WooCommerce orders, though you can choose the price source in the Templates settings.
 
 == Screenshots ==
 
-1. Invoice Numbering
-2. Refund Invoice
-3. One-Click Printing
-4. Developer Support
-5. Invoice Link in Email
-6. My Account Page
-7. Footer
-8. Shop Details
-9. Side Panel
-10. Bulk Actions
-11. Live Preview
+1. Dashboard – setup checklist and quick actions
+2. Templates – list of all five document types with enable/disable toggles
+3. Template Editor – customise sections, fonts, colours, and layout with live preview
+4. Watermark Settings – configure watermark text, opacity, angle, and repeat style
+5. Invoice Numbering – sequential numbering with format placeholders and yearly reset
+6. PDF Settings – enable PDF storage, set expiration, and configure filename format
+7. Email Attachments – attach PDFs to customer and admin emails by order status
+8. Store Settings – configure shop name, logo, address, and contact details
+9. Print Button on Order Edit Page – one-click printing from the WooCommerce order screen
+10. Customer My Account Page – print buttons on the Orders page
+11. Bulk Actions – print or generate PDFs for multiple orders at once
 
 == External Services ==
 This plugin communicates with our tracking server to send usage data **only** if the user has explicitly opted in to usage tracking. For detailed information about what is tracked, please refer to our [usage tracking documentation](https://www.tychesoftwares.com/docs/woocommerce-print-invoice-delivery-note/print-invoice-usage-trackings/).
 
 == Changelog ==
+
+= 7.0.0 - 09/04/2026 =
+This release is a complete overhaul of the plugin. The admin interface has been rebuilt using React and the plugin codebase has been fully restructured.
+* Enhancement - Rebuilt the admin interface using React, with dedicated Dashboard, Templates, Settings, and FAQs pages.
+* Enhancement - Added support for five document types: Invoice, Delivery Note, Receipt, Credit Note, and Packing Slip.
+* Enhancement - Added PDF generation and storage for order documents, powered by Dompdf, with configurable file expiration.
+* Enhancement - Added sequential invoice numbering with optional yearly reset and a configurable starting number per year.
+* Enhancement - Added per-template customisation options including logo, colours, font sizes, watermark, and layout settings.
+* Enhancement - Added support for attaching documents to WooCommerce order emails.
+* Enhancement - Added a REST API layer for all admin operations including settings, templates, and PDF generation.
+* Enhancement - Added a data migration routine to carry over settings and invoice counters from previous versions.
+* Tweak - Restructured the plugin codebase with a service-based architecture and Composer autoloading.
+* Tweak - Replaced the legacy template engine with a new renderer supporting theme overrides.
+* Tweak - Added SCRIPT_DEBUG and WCDN_SCRIPT_DEBUG support to switch between minified and unminified assets.
+* Tweak - Updated codebase to align with WordPress Coding Standards.
 
 = 6.0.0 - 27/01/2026 =
 * Fix - Fatal error on the template settings page caused by an invalid string offset type.
@@ -832,6 +692,10 @@ Tweak :- In FAQ page changed the code snippet to add the products image in the i
 * New template structure and action hooks
 
 == Upgrade Notice ==
+
+= 7.0.0 =
+
+7.0.0 is a complete overhaul of the plugin with a new React-based admin interface and restructured codebase. Settings and invoice counters are migrated automatically from previous versions.
 
 = 4.2.0 =
 

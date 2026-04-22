@@ -1,5 +1,8 @@
 *** Print Invoice & Delivery Notes for WooCommerce ***
 
+2026-04-09 - version 7.0.1
+* Fix - Resolved an issue where a missing static file prevented the page from loading correctly after 7.0.0 update.
+
 2026-04-09 - version 7.0.0
 This release is a complete overhaul of the plugin. The admin interface has been rebuilt using React and the plugin codebase has been fully restructured.
 * Enhancement - Rebuilt the admin interface using React, with dedicated Dashboard, Templates, Settings, and FAQs pages.

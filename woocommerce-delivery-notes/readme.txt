@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Tested up to: 6.9.4
 WC requires at least: 5.0.0
 WC tested up to: 10.7.0
-Stable tag: 7.0.0
+Stable tag: 7.0.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -243,6 +243,9 @@ No, document prices come directly from WooCommerce orders, though you can choose
 This plugin communicates with our tracking server to send usage data **only** if the user has explicitly opted in to usage tracking. For detailed information about what is tracked, please refer to our [usage tracking documentation](https://www.tychesoftwares.com/docs/woocommerce-print-invoice-delivery-note/print-invoice-usage-trackings/).
 
 == Changelog ==
+
+= 7.0.1 - 09/04/2026 =
+* Fix - Resolved an issue where a missing static file prevented the page from loading correctly after 7.0.0 update.
 
 = 7.0.0 - 09/04/2026 =
 This release is a complete overhaul of the plugin. The admin interface has been rebuilt using React and the plugin codebase has been fully restructured.

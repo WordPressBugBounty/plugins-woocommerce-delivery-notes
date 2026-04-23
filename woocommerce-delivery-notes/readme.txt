@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Tested up to: 6.9.4
 WC requires at least: 5.0.0
 WC tested up to: 10.7.0
-Stable tag: 7.0.1
+Stable tag: 7.0.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -244,10 +244,14 @@ This plugin communicates with our tracking server to send usage data **only** if
 
 == Changelog ==
 
-= 7.0.1 - 09/04/2026 =
+= 7.0.2 - 23/04/2026 =
+* Fix - Fatal error displayed on edit order page after 7.0 update when HPOS was disabled.
+* Fix - Bulk actions dropdown displayed blank labels after 7.0 update.
+
+= 7.0.1 - 22/04/2026 =
 * Fix - Resolved an issue where a missing static file prevented the page from loading correctly after 7.0.0 update.
 
-= 7.0.0 - 09/04/2026 =
+= 7.0.0 - 22/04/2026 =
 This release is a complete overhaul of the plugin. The admin interface has been rebuilt using React and the plugin codebase has been fully restructured.
 * Enhancement - Rebuilt the admin interface using React, with dedicated Dashboard, Templates, Settings, and FAQs pages.
 * Enhancement - Added support for five document types: Invoice, Delivery Note, Receipt, Credit Note, and Packing Slip.

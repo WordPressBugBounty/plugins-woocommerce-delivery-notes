@@ -52,10 +52,21 @@ class Pdf {
 	 */
 	public function init() {
 
+		if ( ! apply_filters( 'wcdn_enable_pdf', true ) ) {
+				return;
+		}
 		$filesystem = Utils::get_filesystem();
 
 		if ( ! $filesystem ) {
 			return;
+		}
+
+		if ( $filesystem instanceof \WP_Filesystem_FTPext ) {
+			$reflection = new \ReflectionProperty( $filesystem, 'link' );
+			$reflection->setAccessible( true );
+			if ( null === $reflection->getValue( $filesystem ) ) {
+				return; // FTP not connected, bail out safely.
+			}
 		}
 
 		if ( ! as_has_scheduled_action( 'wcdn_delete_pdf_files' ) ) {
@@ -130,7 +141,7 @@ class Pdf {
 		$filesystem  = Utils::get_filesystem();
 		$is_multiple = is_array( $order_id );
 
-		if ( ! $filesystem || ! Settings::get( 'enablePDF' ) ) {
+		if ( ! $filesystem || ! Settings::get( 'enablePDF' ) || ! apply_filters( 'wcdn_enable_pdf', true ) ) {
 			return false;
 		}
 
@@ -277,8 +288,10 @@ class Pdf {
 
 		if ( ! $is_sample && ! $is_multiple ) {
 			$order = wc_get_order( $order_id );
-			$order->update_meta_data( '_wcdn_' . $template . '_pdf', $filename );
-			$order->save();
+			if ( $order ) {
+				$order->update_meta_data( '_wcdn_' . $template . '_pdf', $filename );
+				$order->save();
+			}
 		}
 
 		return $file;

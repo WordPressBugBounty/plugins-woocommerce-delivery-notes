@@ -6,10 +6,19 @@ const postcss = require("postcss");
 const cssnano = require("cssnano");
 
 const PLUGIN_SLUG = "woocommerce-delivery-notes";
-const variant = process.argv.includes("--variant=wc") ? "wc" : "non-wc";
-const DEST_BASE = path.join("dist", variant === "wc" ? "wc-version" : "non-wc-version");
+const pluginHeader = fs.readFileSync(`${PLUGIN_SLUG}.php`, "utf8");
+const version = (pluginHeader.match(/\*\s+Version:\s+(\S+)/) ?? [])[1] ?? "0.0.0";
+const variant = process.argv.includes("--variant=wc")
+    ? "wc"
+    : process.argv.includes("--variant=svn")
+        ? "svn"
+        : "non-wc";
+
+const DEST_BASE = variant === "svn"
+    ? "dist"
+    : path.join("dist", variant === "wc" ? "wc-version" : "non-wc-version");
 const DEST = path.join(DEST_BASE, PLUGIN_SLUG);
-const ZIP_PATH = path.join(DEST_BASE, `${PLUGIN_SLUG}.zip`);
+const ZIP_PATH = path.join(DEST_BASE, `${PLUGIN_SLUG}.${version}.zip`);
 
 // Files/folders to copy into the distribution.
 const INCLUDE = [
@@ -25,6 +34,7 @@ const INCLUDE = [
     "README.md",
     "readme.txt",
     "changelog.txt",
+    "HOOKS.md",
 ];
 
 // Assets minified in the dist output (WC version skips the tracking JS).
@@ -52,10 +62,11 @@ if (!fs.existsSync("vendor")) {
 }
 
 // Clean only this variant's output folder (leaves the other variant intact).
-fs.removeSync(DEST_BASE);
+fs.removeSync(variant === "svn" ? DEST : DEST_BASE);
 fs.mkdirpSync(DEST);
 
-console.log(`\nPackaging ${variant === "wc" ? "WC Marketplace" : "Standard"} version…`);
+const variantLabel = variant === "wc" ? "WC Marketplace" : variant === "svn" ? "SVN" : "Standard";
+console.log(`\nPackaging ${variantLabel} version…`);
 
 // Copy all included files.
 INCLUDE.forEach((item) => {
@@ -137,7 +148,7 @@ function patchWcVersion(dest) {
 
 // Removes the Admin_Component load from class-files.php.
 function patchFilesPhp(file) {
-    let content = fs.readFileSync(file, "utf8");
+    let content = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
 
     content = replaceOrWarn(
         content,
@@ -154,7 +165,7 @@ function patchFilesPhp(file) {
 
 // Removes the tracker filter, tracking scripts enqueue, and tracker_data method.
 function patchBackendPhp(file) {
-    let content = fs.readFileSync(file, "utf8");
+    let content = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
 
     // 1. Remove add_filter for tracker data.
     content = replaceOrWarn(
@@ -192,7 +203,7 @@ function patchBackendPhp(file) {
 
 // Removes the reset_plugin_usage_tracking handler from class-settings.php.
 function patchSettingsPhp(file) {
-    let content = fs.readFileSync(file, "utf8");
+    let content = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
 
     content = content.replace(
         /\n\t\tif \( isset\( \$params\['reset_plugin_usage_tracking'\] \) \) \{[\s\S]*?\n\t\t\}\n\n(?=\t\t\$old_settings)/,
@@ -208,7 +219,7 @@ function patchSettingsPhp(file) {
 
 // Removes the tracker display notice filter and method from class-scripts.php.
 function patchScriptsPhp(file) {
-    let content = fs.readFileSync(file, "utf8");
+    let content = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
 
     // Remove add_filter line for tracker display notice.
     content = replaceOrWarn(
@@ -234,7 +245,7 @@ function patchScriptsPhp(file) {
 
 // Removes the Flexi BOGO cross-promotion block from readme.txt.
 function patchReadmeTxt(file) {
-    let content = fs.readFileSync(file, "utf8");
+    let content = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
 
     content = content.replace(
         /> ###🚀[^\n]*\n>\n>[^\n]*\n\n/,

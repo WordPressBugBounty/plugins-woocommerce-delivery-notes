@@ -26,7 +26,7 @@ final class WooCommerce_Delivery_Notes {
 	 *
 	 * @var string
 	 */
-	protected static $plugin_version = '7.2.0';
+	protected static $plugin_version = '7.2.1';
 
 	/**
 	 * Minimum version of WordPress required.
@@ -250,10 +250,10 @@ final class WooCommerce_Delivery_Notes {
 			return true;
 		}
 
-		self::include_file( 'class-wcdn-notices.php' );
+		self::include_file( 'admin/class-notices.php' );
 
 		foreach ( $messages as $index => $message ) {
-			WCDN_Notices::add_notice(
+			Notices::add_notice(
 				'plugin_installation_error_notice_' . $index,
 				$message
 			);

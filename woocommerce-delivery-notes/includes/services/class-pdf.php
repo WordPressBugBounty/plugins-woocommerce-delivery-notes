@@ -137,6 +137,10 @@ class Pdf {
 	 */
 	public function generate( $order_id, $template, $data = array(), $force = true ) {
 
+		// Reject unknown template keys before any path is built.
+		if ( ! in_array( $template, Template_Engine::get_template_keys(), true ) ) {
+			return false;
+		}
 		$is_sample   = 'sample' === $order_id;
 		$filesystem  = Utils::get_filesystem();
 		$is_multiple = is_array( $order_id );
@@ -153,11 +157,25 @@ class Pdf {
 		// Protect directory from direct access.
 		$this->protect_directory( $base_dir );
 
+		$document_order = null;
+		$refund_id      = 0;
+		if ( ! $is_sample && ! $is_multiple ) {
+			$document_order = wc_get_order( $order_id );
+			if ( 'creditnote' === $template ) {
+				$refund_id      = absint( $data['order']['refund']['id'] ?? 0 );
+				$document_order = Utils::get_order_refund( $document_order, $refund_id );
+				if ( ! $document_order ) {
+					return false;
+				}
+				$refund_id = $document_order->get_id();
+			}
+		}
+
 		if ( ! $is_multiple ) {
 			Utils::maybe_generate_counter( $order_id );
 		}
 
-		$filename = $is_sample ? 'sample-' . $template . '-' . strtotime( 'now' ) . '.pdf' : ( $is_multiple ? 'merged-' . $template . '-' . md5( implode( '-', $order_id ) ) . '.pdf' : $this->get_filename( $order_id, $template ) );
+		$filename = $is_sample ? 'sample-' . $template . '-' . strtotime( 'now' ) . '.pdf' : ( $is_multiple ? 'merged-' . $template . '-' . md5( implode( '-', $order_id ) ) . '.pdf' : $this->get_filename( $order_id, $template, $refund_id ) );
 		$file     = $base_dir . $filename;
 
 		if ( ! $force && $filesystem->exists( $file ) ) {
@@ -235,6 +253,7 @@ class Pdf {
 					array(
 						$options->getRootDir(),
 						realpath( ABSPATH ),
+						realpath( $upload_dir['basedir'] ),
 						realpath( $upload_fonts_dir ),
 					)
 				)
@@ -286,12 +305,9 @@ class Pdf {
 
 		do_action( 'wcdn_after_pdf_generated', $file, $order_id, $template );
 
-		if ( ! $is_sample && ! $is_multiple ) {
-			$order = wc_get_order( $order_id );
-			if ( $order ) {
-				$order->update_meta_data( '_wcdn_' . $template . '_pdf', $filename );
-				$order->save();
-			}
+		if ( $document_order ) {
+			$document_order->update_meta_data( '_wcdn_' . $template . '_pdf', $filename );
+			$document_order->save();
 		}
 
 		return $file;
@@ -300,14 +316,20 @@ class Pdf {
 	/**
 	 * Generate filename.
 	 *
-	 * @param int    $order_id Order ID.
-	 * @param string $template Template key.
+	 * @param int    $order_id  Order ID.
+	 * @param string $template  Template key.
+	 * @param int    $refund_id Optional selected refund ID for a credit note.
 	 * @return string
 	 * @since 7.0
 	 */
-	protected function get_filename( $order_id, $template ) {
+	protected function get_filename( $order_id, $template, $refund_id = 0 ) {
 
 		$order = wc_get_order( $order_id );
+		// Use the parent order's filename format, but keep each refund's token separate.
+		$document_order = 'creditnote' === $template ? Utils::get_order_refund( $order, $refund_id ) : $order;
+		if ( ! $document_order ) {
+			return '';
+		}
 
 		$format = Templates::get(
 			$template,
@@ -322,7 +344,7 @@ class Pdf {
 		);
 
 		$base     = preg_replace( '/\.pdf$/i', '', $filename );
-		$token    = $this->get_secure_token( $order_id, $template, $order );
+		$token    = $this->get_secure_token( $document_order->get_id(), $template, $document_order );
 		$filename = $base . '-' . $token . '.pdf';
 
 		return apply_filters( 'wcdn_pdf_filename', $filename, $order_id, $template );
@@ -374,6 +396,9 @@ class Pdf {
 		$upload_dir = wp_upload_dir();
 		$base_url   = trailingslashit( $upload_dir['baseurl'] ) . 'wcdn/' . $template . '/';
 		$filename   = $this->get_filename( $order_id, $template );
+		if ( '' === $filename ) {
+			return '';
+		}
 		return esc_url( $base_url . $filename );
 	}
 
